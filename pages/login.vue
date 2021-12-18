@@ -4,13 +4,14 @@
       <h1 class="font-semibold mb-2 text-xl">
         Login
       </h1>
-      <div class="mb-4">
+      <Alert :message="message" v-if="alertType" :alertType="alertType" class="my-4"/>
+      <div class="my-4">
         <label for="username" class="block mb-1 text-sm">Phone/Email</label>
         <input
           type="text"
           name="username"
           class="w-full border rounded px-3 py-2"
-          required
+          value="+8801750042986"
         />
       </div>
       <div class="mb-4">
@@ -19,7 +20,7 @@
           type="password"
           name="password"
           class="w-full border rounded px-3 py-2"
-          required
+          value="123456"
         />
       </div>
       <button
@@ -28,37 +29,55 @@
       >
         Login
       </button>
+      <p class="mt-5 text-center">Don't have an account? <nuxt-link class="text-blue-500" to="/register">Register</nuxt-link></p>
     </form>
   </div>
 </template>
 
 <script>
+  import Alert from '~/components/Alert';
+
   export default {
+    components: {
+      Alert
+    },
     data() {
       return {
-        error: {},
+        message: null,
+        alertType: null,
       };
     },
     mounted() {
       // Before loading login page, obtain csrf cookie from the server.
-      this.$axios.$get('/sanctum/csrf-cookie');
+      //this.$axios.$get('/sanctum/csrf-cookie');
     },
     methods: {
       async login() {
-        this.error = {};
+        this.message = null;
+        this.alertType = null;
         try {
           // Prepare form data
           const formData = new FormData(this.$refs.loginform);
 
-          // Pass form data to `loginWith` function
-          await this.$auth.loginWith('local', { data: formData });
+          console.log(formData);
 
-          // Redirect user after login
+          // Pass form data to `loginWith` function
+          await this.$auth.loginWith('laravelSanctum', { data: formData });
+
+          /*if (res) {
+            if (res.data.success === false) {
+              this.message = res.data.message;
+              this.alertType = 'warning';
+            }
+          }*/
+
           this.$router.push({
-            path: '/',
+            path: '/profile',
           });
+
         } catch (err) {
-          this.error = err;
+          this.message = 'Login failed. Try again';
+          this.alertType = 'error';
           // do something with error
         }
       },

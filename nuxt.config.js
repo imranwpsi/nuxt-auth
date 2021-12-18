@@ -13,7 +13,7 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', href: 'https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css' }
+      { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/1.1.2/tailwind.min.css' }
     ]
   },
 
@@ -32,29 +32,44 @@ export default {
   buildModules: [
   ],
 
+  router: {
+    //middleware: ['auth']
+  },
+
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     '@nuxtjs/axios',
-    '@nuxtjs/auth'
+    '@nuxtjs/auth-next'
   ],
   auth: {
     redirect: {
       login: '/login',
       logout: '/',
-      callback: '/login',
-      home: '/'
+      //callback: '/login',
+      home: '/profile'
     },
     strategies: {
-      local: {
+      laravelSanctum: {
+        provider: 'laravel/sanctum',
+        url: 'http://localhost:8000',
         endpoints: {
-          login: { url: '/api/v1/auth/login', method: 'post', propertyName: 'token' },
-          user: { url: '/api/user', method: 'get', propertyName: false }
+          login: {
+            url: '/api/v1/auth/login'
+          },
+          logout: {
+            url: '/api/v1/auth/logout'
+          },
+          user: {
+            url: '/api/user'
+          }
         },
-        //tokenRequired: false,
-        tokenType: ''
+        user: {
+          property: false
+        }
       }
-    },
-    localStorage: false
+    }
+    //cookie: false,
+    //localStorage: false
   },
   axios: {
     baseURL: "http://localhost:8000",
